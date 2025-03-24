@@ -1,7 +1,7 @@
 package security
 
 import (
-	"go-basic/domain/entity"
+	"go-basic/customer/entity"
 	"log"
 	"os"
 	"time"

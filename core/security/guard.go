@@ -3,7 +3,7 @@ package security
 import (
 	"strings"
 
-	"go-basic/application/util"
+	"go-basic/util"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

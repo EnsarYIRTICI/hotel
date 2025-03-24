@@ -19,7 +19,7 @@ func HealthCheck(c *gin.Context) {
 }
 
 // Tüm route'ları kaydederken health kontrolünü de ekleyin
-func RegisterIndexRoutes(router *gin.Engine) {
+func RegisterRoutes(router *gin.Engine) {
 	router.GET("/", HomeHandler)
 	router.GET("/api/health", HealthCheck)
 }

@@ -1,8 +1,8 @@
 package route
 
 import (
-	"go-basic/application/service"
-	"go-basic/presentation/dto"
+	"go-basic/auth/dto"
+	"go-basic/auth/service"
 
 	"net/http"
 
@@ -10,19 +10,26 @@ import (
 )
 
 // Tüm Auth route'larını kaydeder
-func RegisterAuthRoutes(router *gin.Engine) {
+func RegisterRoutes(router *gin.Engine) {
 
-	authService := service.NewAuthService()
+	st := AuthRouteST{
+		_service: service.NewAuthService(),
+	}
 
 	authGroup := router.Group("/api/auth")
 	{
-		authGroup.POST("register", func(c *gin.Context) { Register(c, authService) })
-		authGroup.POST("login", func(c *gin.Context) { Login(c, authService) })
+		authGroup.POST("register", st.Register)
+		authGroup.POST("login", st.Login)
 	}
 }
 
+// Tüm Auth Route Struct
+type AuthRouteST struct {
+	_service service.AuthService
+}
+
 // Login, kullanıcı girişini başlatır
-func Login(c *gin.Context, authService service.AuthService) {
+func (st *AuthRouteST) Login(c *gin.Context) {
 	var loginData dto.LoginDTO
 
 	// JSON verisini al
@@ -32,7 +39,7 @@ func Login(c *gin.Context, authService service.AuthService) {
 	}
 
 	// AuthService ile işlemi gerçekleştir
-	token, customerRes, err := authService.Login(loginData)
+	token, customerRes, err := st._service.Login(loginData)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
@@ -46,7 +53,7 @@ func Login(c *gin.Context, authService service.AuthService) {
 }
 
 // Register, kullanıcı kaydını başlatır
-func Register(c *gin.Context, authService service.AuthService) {
+func (st *AuthRouteST) Register(c *gin.Context) {
 	var newCustomer dto.RegisterDTO
 
 	// JSON verisini al
@@ -55,7 +62,7 @@ func Register(c *gin.Context, authService service.AuthService) {
 		return
 	}
 
-	token, customerRes, err := authService.Register(newCustomer)
+	token, customerRes, err := st._service.Register(newCustomer)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

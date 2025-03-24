@@ -1,10 +1,11 @@
 package main
 
 import (
-	"go-basic/application/util"
+	authRoute "go-basic/auth/route"
+	"go-basic/health/route"
 	"go-basic/infrastructure/db"
-	"go-basic/presentation/route"
 	"go-basic/security"
+	"go-basic/util"
 	"log"
 
 	"github.com/gin-contrib/cors"
@@ -31,8 +32,8 @@ func main() {
 	}
 	r.Use(guardMiddleware)
 
-	route.RegisterIndexRoutes(r)
-	route.RegisterAuthRoutes(r)
+	route.RegisterRoutes(r)
+	authRoute.RegisterRoutes(r)
 
 	log.Println("Server is running on port 3000")
 	if err := r.Run(":3000"); err != nil {

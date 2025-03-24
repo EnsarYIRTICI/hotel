@@ -3,39 +3,42 @@ package service
 import (
 	"errors"
 
-	"go-basic/application/util"
-	"go-basic/domain/entity"
-	"go-basic/domain/repository"
-	"go-basic/presentation/dto"
+	"go-basic/customer/entity"
+
+	"go-basic/auth/dto"
+	"go-basic/auth/repository"
+
 	"go-basic/security"
+	"go-basic/util"
 
 	"github.com/jinzhu/copier"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-// authService, kimlik doğrulama işlemlerini içerir
-
-type AuthService interface {
-	Login(loginData dto.LoginDTO) (*string, *dto.CustomerResponseDTO, error)
-	Register(registerDto dto.RegisterDTO) (*string, *dto.CustomerResponseDTO, error)
-}
-
-type authService struct {
-	repo   repository.CustomerRepository
-	logger util.Logger
-}
-
 // NewauthService, yeni bir authService oluşturur
 func NewAuthService() AuthService {
-	return &authService{
-		repo:   repository.NewCustomerRepository(),
+
+	return &AuthServiceST{
+		repo:   repository.NewAuthRepository(),
 		logger: *util.NewLogger("AUTH-SERVICE"),
 	}
 }
 
+// authService, kimlik doğrulama işlemlerini içerir
+
+type AuthServiceST struct {
+	repo   repository.AuthRepository
+	logger util.Logger
+}
+
+type AuthService interface {
+	Login(loginData dto.LoginDTO) (*string, *dto.AuthResponseDTO, error)
+	Register(registerDto dto.RegisterDTO) (*string, *dto.AuthResponseDTO, error)
+}
+
 // Login kullanıcı girişi yapar ve JWT token döner
-func (service *authService) Login(loginData dto.LoginDTO) (*string, *dto.CustomerResponseDTO, error) {
+func (service *AuthServiceST) Login(loginData dto.LoginDTO) (*string, *dto.AuthResponseDTO, error) {
 
 	service.logger.Log("Deneme")
 
@@ -62,7 +65,7 @@ func (service *authService) Login(loginData dto.LoginDTO) (*string, *dto.Custome
 	}
 
 	// Entity Dto Dönüşümü
-	var customerDTO dto.CustomerResponseDTO
+	var customerDTO dto.AuthResponseDTO
 	err = copier.Copy(&customerDTO, &existingCustomer)
 	if err != nil {
 		return nil, nil, errors.New("DTO kopyalama hatası")
@@ -75,7 +78,7 @@ func (service *authService) Login(loginData dto.LoginDTO) (*string, *dto.Custome
 }
 
 // Register kullanıcı kaydını gerçekleştirir
-func (service *authService) Register(registerDto dto.RegisterDTO) (*string, *dto.CustomerResponseDTO, error) {
+func (service *AuthServiceST) Register(registerDto dto.RegisterDTO) (*string, *dto.AuthResponseDTO, error) {
 	// Aynı kimlik numarası ile kayıtlı kullanıcı var mı?
 	existingCustomer, _ := service.repo.GetByIdentityNumber(registerDto.IdentityNumber)
 
@@ -112,7 +115,7 @@ func (service *authService) Register(registerDto dto.RegisterDTO) (*string, *dto
 	}
 
 	// Entity Dto Dönüşümü
-	var customerDTO dto.CustomerResponseDTO
+	var customerDTO dto.AuthResponseDTO
 	err = copier.Copy(&customerDTO, &existingCustomer)
 	if err != nil {
 		return nil, nil, errors.New("copy hatasi")
