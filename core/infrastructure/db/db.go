@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-	"go-basic/domain/entity"
+	"go-basic/customer/entity"
 	"log"
 	"os"
 

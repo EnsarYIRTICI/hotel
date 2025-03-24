@@ -2,9 +2,9 @@ package main
 
 import (
 	authRoute "go-basic/auth/route"
-	"go-basic/health/route"
 	"go-basic/infrastructure/db"
 	"go-basic/security"
+	"go-basic/system/route"
 	"go-basic/util"
 	"log"
 
